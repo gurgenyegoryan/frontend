@@ -3,6 +3,7 @@ stages:
 
 variables:
   CI_GROUP_NAME: telecomproject
+  AWS_DEFAULT_REGION: eu-west-1
 build:
   stage: build
   image: 
