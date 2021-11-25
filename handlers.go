@@ -30,8 +30,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 
-	pb "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
-	"github.com/GoogleCloudPlatform/microservices-demo/src/frontend/money"
+	pb "tele.com/genproto" // Changed from public repo to a local folder
+	"tele.com/money" // Changed from public repo to a local folder
 )
 
 type platformDetails struct {
