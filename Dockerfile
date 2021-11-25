@@ -23,8 +23,8 @@ RUN go mod download
 COPY . .
 
 # Skaffold passes in debug-oriented compiler flags
-# ARG SKAFFOLD_GO_GCFLAGS
-# RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /go/bin/frontend .
+# ARG SKAFFOLD_GO_GCFLAGS -gcflags="${SKAFFOLD_GO_GCFLAGS}"
+RUN go build -o /go/bin/frontend .
 
 FROM alpine as release
 RUN apk add --no-cache ca-certificates \
