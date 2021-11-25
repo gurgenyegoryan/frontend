@@ -4,6 +4,9 @@ stages:
 variables:
   CI_GROUP_NAME: telecomproject
   AWS_DEFAULT_REGION: eu-west-1
+  AWS_ACCESS_KEY_ID: AKIAUNC467SMOH2XM5NF
+  AWS_SECRET_KEY: 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
+
 build:
   stage: build
   image: 
