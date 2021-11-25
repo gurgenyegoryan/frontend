@@ -30,7 +30,7 @@ FROM alpine as release
 RUN apk add --no-cache ca-certificates \
     busybox-extras net-tools bind-tools
 WORKDIR /src
-COPY --from=builder /go/bin/frontend /src/server
+COPY --from=compiler /go/bin/frontend /src/server
 COPY ./templates ./templates
 COPY ./static ./static
 
