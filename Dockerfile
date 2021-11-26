@@ -6,7 +6,6 @@ WORKDIR /src
 # restore dependencies
 # COPY go.mod go.sum ./
 COPY . .
-RUN ls -Alph
 RUN go mod download
 
 
