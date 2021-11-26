@@ -29,5 +29,6 @@ build:
     #- aws eks describe-cluster --name telecomproject 
     # Check if exist telecomproject. If no create
     #- if [ $? -ne 0 ]; then eksctl create cluster -f create_cluster.yaml; else echo "Cluster telecomproject exist" fi
-    - aws eks describe-cluster --name telecomproject | eksctl create cluster -f create_cluster.yaml 
+    - aws eks describe-cluster --name telecomproject 
+    - echo $?
 
