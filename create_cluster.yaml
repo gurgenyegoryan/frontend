@@ -11,8 +11,21 @@ nodeGroups:
     instanceType: t2.micro
     desiredCapacity: 1
     volumeSize: 50
-    ssh:
-      publicKeyPath: ~/.ssh/telecom.pub
+
+  - name: node-2
+    instanceType: t2.micro
+    desiredCapacity: 1
+    volumeSize: 50
+  
+  - name: node-3
+    instanceType: t2.micro
+    desiredCapacity: 1
+    volumeSize: 50
+
+  - name: node-4
+    instanceType: t2.micro
+    desiredCapacity: 1
+    volumeSize: 50
   
 
   ### RUN following command and create the cluster
