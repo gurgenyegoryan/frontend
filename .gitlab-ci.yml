@@ -32,17 +32,3 @@ build:
     #- if [ $? -ne 0 ]; then eksctl create cluster -f create_cluster.yaml; else echo "Cluster telecomproject exist" fi
    # - aws eks describe-cluster --name telecomproject 
     #- echo $?
-
-deploy:
-  stage: deploy
-  image: 
-    name: docker:latest
-  services:
-    - docker:19-dind
-  script:
-    - aws eks describe-cluster --name $CI_GROUP_NAME || eksctl create cluster -f eksCreate.yaml
-    - kubectl apply -f ./kubernetes-manifests.yaml
-    - kubectl get service frontend-external | awk '{print $4}'
-
-
-
