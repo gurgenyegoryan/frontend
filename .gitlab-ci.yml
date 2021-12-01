@@ -16,7 +16,7 @@ build:
   services:
     - docker:19-dind
   before_script:
-    - aws ecr describe-repositories --repository-names $CI_GROUP_NAME >> /dev/null || aws ecr create-repository --repository-name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
+    - aws ecr create-repository --repository-name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION || true
     - export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names telecomproject --query repositories[].repositoryUri --output text`
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
   script:
