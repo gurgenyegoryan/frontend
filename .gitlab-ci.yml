@@ -6,20 +6,17 @@ stages:
 build:
   stage: build
   image: 
-    name: registry.gitlab.com/telecomproject/cluster/telecomproject:latest
+    name: $CI_REGISTRY/telecomproject/cluster/telecomproject:latest
   services:
     - docker:19-dind
   before_script:
     - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text`
     - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY
-    - echo 'CI_REGISTRY is '$CI_REGISTRY
-    - echo 'CI_COMMIT_REF_SLUG is '$CI_COMMIT_REF_SLUG
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker build -t $CI_PROJECT_NAME:latest .
     - docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest
     - docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest
-    - docker image ls
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest
     - docker push $AWS_REGISTRY:latest
