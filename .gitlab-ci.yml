@@ -6,7 +6,7 @@ stages:
 build:
   stage: build
   image: 
-    name: $CI_REGISTRY/telecomproject/cluster/telecomproject:latest
+    name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
   before_script:
