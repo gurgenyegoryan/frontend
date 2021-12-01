@@ -10,13 +10,13 @@ build:
   services:
     - docker:19-dind
   before_script:
-    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true
-    - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text`
-    - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #pushAWS
+    - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #pushAWS
+    - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #pushAWS
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
-    - docker build -t $CI_PROJECT_NAME:latest .
-    - docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest
-    - docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest
-    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest
-    - docker push $AWS_REGISTRY:latest
+    - docker build -t $CI_PROJECT_NAME:latest . #build
+    - docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest #pushAWS
+    - docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
+    - docker push $AWS_REGISTRY:latest #pushAWS
+    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
