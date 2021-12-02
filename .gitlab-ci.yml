@@ -16,10 +16,14 @@ build:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
     - docker pull $AWS_REGISTRY:latest || true
-    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:v1 || true
+    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA || true
     - docker build -t $AWS_REGISTRY:latest . #build
-    #- docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest #pushAWS
-    #- docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
-    - docker push $AWS_REGISTRY:v1
-    - docker push $AWS_REGISTRY:latest #pushAWS
-    #- docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
+    - docker pull $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest || true
+    - docker image tag $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest:$CI_COMMIT_BEFORE_SHA || true
+    - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushAWS
+    
+    - docker push $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA #pushAWS-versions
+    - docker push $AWS_REGISTRY:latest #pushAWS-latest
+    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_BEFORE_SHA #pushGL-versions
+    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL-latest
+
