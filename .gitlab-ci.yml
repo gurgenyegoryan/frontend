@@ -3,23 +3,20 @@ stages:
   - push
   - deploy
 
-variables:
-  #CI_GROUP_NAME: telecomproject
-  AWS_DEFAULT_REGION: eu-west-1
-  AWS_ACCESS_KEY_ID: AKIAUNC467SMOH2XM5NF
-  AWS_SECRET_ACCESS_KEY: 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
-
 build:
   stage: build
   image: 
-    name: registry.gitlab.com/telecomproject/cluster/telecomproject:latest
+    name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
   before_script:
-    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true
-    - export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text`
-    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #pushAWS
+    - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #pushAWS
+    - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #pushAWS
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
-    - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker build -t $DOCKER_REGISTRY:$CI_PROJECT_NAME .
-    - docker push $DOCKER_REGISTRY:$CI_PROJECT_NAME
+    - docker build -t $CI_PROJECT_NAME:latest . #build
+    - docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest #pushAWS
+    - docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
+    - docker push $AWS_REGISTRY:latest #pushAWS
+    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
