@@ -19,7 +19,7 @@ build:
     - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA || true
     - docker build -t $AWS_REGISTRY:latest . #build
     - docker pull $CI_REGISTRY_IMAGE:latest || true
-    - docker image tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:latest:$CI_COMMIT_BEFORE_SHA || true
+    - docker image tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA || true
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE:latest #pushAWS
     - docker images
     - docker push $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA #pushAWS-versions
