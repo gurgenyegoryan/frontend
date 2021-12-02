@@ -22,8 +22,8 @@ build:
     - docker image tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA || true
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE:latest #pushAWS
     - docker images
-    - docker push $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA #pushAWS-versions
+    - docker push $AWS_REGISTRY:$CI_COMMIT_BEFORE_SHA || true #pushAWS-versions
     - docker push $AWS_REGISTRY:latest #pushAWS-latest
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA #pushGL-versions
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_BEFORE_SHA || true #pushGL-versions
     - docker push $CI_REGISTRY_IMAGE:latest #pushGL-latest
 
