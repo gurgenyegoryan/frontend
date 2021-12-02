@@ -15,12 +15,11 @@ build:
     - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #pushAWS
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
-    - docker build -t $CI_PROJECT_NAME:latest . #build
-    - docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest #pushAWS
-    - docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
+    - docker pull $AWS_REGISTRY:latest || true
+    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:v1 || true
+    - docker build -t $AWS_REGISTRY:latest . #build
+    #- docker image tag $CI_PROJECT_NAME:latest $AWS_REGISTRY:latest #pushAWS
+    #- docker image tag $CI_PROJECT_NAME:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
+    - docker push $AWS_REGISTRY:v1
     - docker push $AWS_REGISTRY:latest #pushAWS
-<<<<<<< HEAD
-    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
-=======
-    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
->>>>>>> 708c4c8d8ecea50df97be339ff6d1b57af0dbbc6
+    #- docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #pushGL
