@@ -4,7 +4,7 @@ stages:
   - deploy
 
 variables:
-  CI_GROUP_NAME: telecomproject
+  #CI_GROUP_NAME: telecomproject
   AWS_DEFAULT_REGION: eu-west-1
   AWS_ACCESS_KEY_ID: AKIAUNC467SMOH2XM5NF
   AWS_SECRET_ACCESS_KEY: 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
@@ -16,9 +16,10 @@ build:
   services:
     - docker:19-dind
   before_script:
-    - aws ecr create-repository --repository-name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true
-    - export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names telecomproject --query repositories[].repositoryUri --output text`
+    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true
+    - export DOCKER_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text`
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
   script:
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
     - docker build -t $DOCKER_REGISTRY:$CI_PROJECT_NAME .
     - docker push $DOCKER_REGISTRY:$CI_PROJECT_NAME
