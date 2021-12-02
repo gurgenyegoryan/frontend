@@ -16,12 +16,11 @@ build:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
     - docker build -t $AWS_REGISTRY:latest . #build
-    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag latest if exist
+    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #set version in latest image
 
-    - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE:latest #pushAWS
-    - docker image tag $CI_REGISTRY_IMAGE:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag latest if exist
-    - docker images
-
+    - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE:latest #tag image for gitlab repo
+    - docker image tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA #set version in latest image
+    
     - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #pushAWS-versions
     - docker push $AWS_REGISTRY:latest #pushAWS-latest
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA #pushGL-versions
