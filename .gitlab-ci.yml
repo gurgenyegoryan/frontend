@@ -23,4 +23,3 @@ build:
     - docker push $AWS_REGISTRY:latest #pushAWS-latest
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA #pushGL-versions
     - docker push $CI_REGISTRY_IMAGE:latest #pushGL-latest
-
