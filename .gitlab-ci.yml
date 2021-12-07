@@ -1,7 +1,17 @@
 stages:
+  - test
   - build
   - push
   - deploy
+
+# test-go:
+#   stage: test
+#   image:
+#     name:
+#   before_script:
+#     -
+#   script:
+#     -
 
 build:
   stage: build
@@ -9,6 +19,7 @@ build:
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
+  # needs: [test]
   before_script:
     - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #pushAWS
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #pushAWS
@@ -16,8 +27,8 @@ build:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
   script:
     - docker build -t $AWS_REGISTRY:latest . #build
-    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #set version in latest image
 
+    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #set version in latest image
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE:latest #tag image for gitlab repo
     - docker image tag $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA #set version in latest image
     
@@ -26,3 +37,14 @@ build:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA #pushGL-versions
     - docker push $CI_REGISTRY_IMAGE:latest #pushGL-latest
 
+deploy:
+  stage: deploy
+  image: 
+    name: $CI_REGISTRY/telecomproject/cluster/docker:latest
+  services:
+    - docker:19-dind
+  needs: [build]
+  script:
+    - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
+    - kubectl apply -f frontend-manifest.yaml
+    - kubectl get service frontend-external | awk '{print $4}'
