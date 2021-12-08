@@ -26,6 +26,6 @@ require (
 )
 
 replace (
-   tele.com/genproto => ./genproto
-   tele.com/money => ./money
+	tele.com/genproto => ./genproto
+	tele.com/money => ./money
 )
