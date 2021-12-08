@@ -32,13 +32,13 @@ build:
     # - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
   script:
     - docker build -t $AWS_REGISTRY:latest . #build AWS:latest
-    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
+    # - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
 
     # - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
     # - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
     
     - docker push $AWS_REGISTRY:latest #push AWS:latest
-    - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
+    # - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
     # - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #push gitlab:latest
     # - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
 
@@ -55,9 +55,13 @@ push-gl:
     - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #docker login AWS repo
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
   script:
-    - docker pull $AWS_REGISTRY:latest . #pull AWS:latest
+    - docker pull $AWS_REGISTRY:latest #pull AWS:latest
+    
+    - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
+
+    - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #push gitlab:latest
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
 
