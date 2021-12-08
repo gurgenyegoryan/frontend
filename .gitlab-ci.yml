@@ -4,15 +4,16 @@ stages:
   - push
   - deploy
 
-# test-go:
-#   stage: test
-#   image:
-#     name:
-#   when: manual
-#   before_script:
-#     -
-#   script:
-#     -
+test-go:
+  stage: test
+  image:
+    name: golang:1.15-alpine
+  when: manual
+  before_script:
+    - apk add --no-cache ca-certificates git
+    - apk add build-base
+  script:
+    - go test
 
 build:
   stage: build
