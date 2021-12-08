@@ -24,7 +24,7 @@ build:
   services:
     - docker:19-dind
   # needs: [test] #unique
-  # when: manual #testing
+  when: manual #testing
   before_script:
     - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #try to create repo
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
@@ -46,9 +46,9 @@ push-gl:
   stage: push
   image: 
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
-  # services:
-  #   - docker:19-dind
-  needs: [build] #unique
+  services:
+    - docker:19-dind
+  # needs: [build] #unique
   when: manual #testing
   before_script:
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
