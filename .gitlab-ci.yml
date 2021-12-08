@@ -8,6 +8,7 @@ stages:
 #   stage: test
 #   image:
 #     name:
+#   when: manual
 #   before_script:
 #     -
 #   script:
@@ -45,6 +46,7 @@ deploy:
   services:
     - docker:19-dind
   needs: [build]
+  when: manual
   script:
     - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
     - kubectl apply -f frontend-manifest.yaml
