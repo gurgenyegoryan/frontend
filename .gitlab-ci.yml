@@ -4,7 +4,7 @@ stages:
   - push
   - deploy
 
-test-go:
+test-go: #unique
   stage: test
   image:
     name: golang:1.15-alpine
@@ -13,9 +13,9 @@ test-go:
     - apk add --no-cache ca-certificates git
     - apk add build-base
   script:
-    - go test
+    - go test #test .go-s in root folder
     - cd money/
-    - go test
+    - go test #test money.go
 
 build:
   stage: build
@@ -23,13 +23,13 @@ build:
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
-  # needs: [test]
+  # needs: [test] #unique
   when: manual
   before_script:
-    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #pushAWS
-    - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #pushAWS
-    - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #pushAWS
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #pushGL
+    - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #try to create repo
+    - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
+    - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #docker login AWS repo
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
   script:
     - docker build -t $AWS_REGISTRY:latest . #build AWS:latest
     - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
@@ -45,12 +45,11 @@ build:
 deploy:
   stage: deploy
   image: 
-    name: $CI_REGISTRY/telecomproject/cluster/docker:latest
-  services:
-    - docker:19-dind
-  needs: [build]
+    name: $CI_REGISTRY/telecomproject/cluster/deptools:latest
+  # needs: [build]
   when: manual
   script:
-    - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
-    - kubectl apply -f frontend-manifest.yaml
-    - kubectl get service frontend-external | awk '{print $4}'
+    - kubectl --version
+    # - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
+    # - kubectl apply -f frontend-manifest.yaml
+    # - kubectl get service frontend-external | awk '{print $4}'
