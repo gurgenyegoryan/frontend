@@ -23,32 +23,23 @@ build:
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
-  # needs: [test] #unique
+  needs: [test] #unique
   when: manual #testing
   before_script:
     - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #try to create repo
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
     - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #docker login AWS repo
-    # - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
   script:
     - docker build -t $AWS_REGISTRY:latest . #build AWS:latest
-    # - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
-
-    # - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
-    # - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
-    
     - docker push $AWS_REGISTRY:latest #push AWS:latest
-    # - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
-    # - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #push gitlab:latest
-    # - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
 
-push-gl:
+push-backup:
   stage: push
   image: 
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
-  # needs: [build] #unique
+  needs: [build] #unique
   when: manual #testing
   before_script:
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
@@ -56,22 +47,20 @@ push-gl:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
   script:
     - docker pull $AWS_REGISTRY:latest #pull AWS:latest
-    
     - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
-
     - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #push gitlab:latest
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
 
-# deploy:
-#   stage: deploy
-#   image: 
-#     name: $CI_REGISTRY/telecomproject/cluster/deptools:latest
-#   needs: [build]
-#   when: manual #testing
-#   script:
-#     - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
-#     - kubectl apply -f frontend-manifest.yaml
-#     - kubectl get service frontend-external | awk '{print $4}'
+deploy:
+  stage: deploy
+  image: 
+    name: $CI_REGISTRY/telecomproject/cluster/deptools:latest
+  needs: [build]
+  when: manual #testing
+  script:
+    - aws eks update-kubeconfig --name $CI_GROUP_NAME --region $AWS_DEFAULT_REGION
+    - kubectl apply -f frontend-manifest.yaml
+    - kubectl get service frontend-external | awk '{print $4}'
