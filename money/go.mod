@@ -7,5 +7,5 @@ require (
 )
 
 replace (
-    tele.com/genproto => ./genproto
+    tele.com/genproto => ../genproto
 )
