@@ -18,7 +18,7 @@ import (
 	"context"
 	"time"
 
-	pb "github.com/GoogleCloudPlatform/microservices-demo/src/frontend/genproto"
+	pb "tele.com/genproto" // Changed from public repo to a local folder
 
 	"github.com/pkg/errors"
 )

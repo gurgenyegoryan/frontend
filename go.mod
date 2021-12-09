@@ -1,8 +1,10 @@
-module github.com/GoogleCloudPlatform/microservices-demo/src/frontend
+module frontend
 
 go 1.15
 
 require (
+	tele.com/genproto v0.0.0
+	tele.com/money v0.0.0
 	cloud.google.com/go v0.40.0
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/exporter/stackdriver v0.5.0
@@ -21,4 +23,9 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532 // indirect
 	google.golang.org/grpc v1.22.0
+)
+
+replace (
+	tele.com/genproto => ./genproto
+	tele.com/money => ./money
 )
