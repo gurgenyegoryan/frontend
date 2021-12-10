@@ -23,7 +23,7 @@ build:
     name: $CI_REGISTRY/telecomproject/cluster/docker:latest
   services:
     - docker:19-dind
-  needs: [test-go] #unique
+  #needs: [test-go] #unique
   when: manual #testing
   before_script:
     - aws ecr create-repository --repository-name $CI_PROJECT_NAME --region $AWS_DEFAULT_REGION >> /dev/null || true #try to create repo
@@ -32,6 +32,11 @@ build:
   script:
     - docker build -t $AWS_REGISTRY:latest . #build AWS:latest
     - docker push $AWS_REGISTRY:latest #push AWS:latest
+    - docker save -o $CI_PROJECT_NAME.latest.tar $AWS_REGISTRY:latest
+  artifacts:
+    paths:
+      - $CI_PROJECT_NAME.latest.tar
+    expire_in: 1 hrs
 
 push-backup:
   stage: push
@@ -40,6 +45,8 @@ push-backup:
   services:
     - docker:19-dind
   needs: [build] #unique
+  dependencies:
+    - "$CI_PROJECT_NAME.latest.tar"
   when: manual #testing
   before_script:
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
