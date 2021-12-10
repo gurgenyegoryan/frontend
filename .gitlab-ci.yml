@@ -56,12 +56,10 @@ push-backup:
   script:
     - docker load -i $CI_PROJECT_NAME.latest.tar #laod the image from build
     - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
-    - docker image tag 302990163096.dkr.ecr.eu-west-1.amazonaws.com/frontend:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #testing
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
     - docker push $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #push AWS:version
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #push gitlab:latest
-    - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #push gitlab:version
 
 deploy:
