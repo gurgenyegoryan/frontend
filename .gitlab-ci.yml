@@ -1,6 +1,6 @@
 include:
   - project: 'telecomproject/resources'
-    ref: loris
+    ref: $INCLUDE_BRANCH
     file: '/.gl-templates/microservices.gitlab-ci.yml'
 
 test:
