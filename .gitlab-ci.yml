@@ -7,14 +7,9 @@ test:
   extends: .test-go
 
 build:
-  extends: .build
   needs:
     - test
 
-push:
-  extends: .push-backup
-
 deploy:
-  extends: .deploy
   after_script:
     - kubectl get service frontend-external | awk '{print $4}'
