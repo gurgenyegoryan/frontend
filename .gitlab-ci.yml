@@ -42,9 +42,9 @@ build:
 push-backup:
   stage: push
   image: 
-    name: docker:dind #$CI_REGISTRY/telecomproject/cluster/docker:latest
-  # services:
-  #   - docker:19-dind
+    name: $CI_REGISTRY/telecomproject/cluster/docker:latest
+  services:
+    - docker:19-dind
   needs:
     - job: build #unique
       artifacts: true
