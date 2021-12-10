@@ -53,8 +53,8 @@ push-backup:
     - export AWS_REGISTRY=`aws ecr describe-repositories --repository-names $CI_PROJECT_NAME --query repositories[].repositoryUri --output text` #get AWS repo uri
     - aws ecr get-login-password | docker login -u AWS --password-stdin $AWS_REGISTRY #docker login AWS repo
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY #docker login GL registry
-  script:
     - docker load -i $CI_PROJECT_NAME.latest.tar #laod the image from build
+  script:
     - docker image tag $AWS_REGISTRY:latest $AWS_REGISTRY:$CI_COMMIT_SHORT_SHA #tag AWS:version
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:latest #tag gitlab:latest
     - docker image tag $AWS_REGISTRY:latest $CI_REGISTRY_IMAGE/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA #tag gitlab:version
