@@ -6,9 +6,9 @@ include:
 test:
   extends: .test-go
 
-build:
-  needs:
-    - test
+#build:
+#  needs:
+#    - test
 
 deploy:
   after_script:
