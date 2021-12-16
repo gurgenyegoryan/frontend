@@ -1,12 +1,10 @@
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: prod
+  #namespace: frontend-app
   name: frontend
-  labels:
-    app: frontend
-    project: telecom-project
 spec:
   selector:
     matchLabels:
@@ -22,10 +20,9 @@ spec:
       serviceAccountName: default
       containers:
         - name: frontend-container
-          image: 302990163096.dkr.ecr.eu-west-1.amazonaws.com/frontend:latest
+          image: 302990163096.dkr.ecr.eu-west-1.amazonaws.com/telecomproject:frontend
           ports:
           - containerPort: 8080
-            name: rpc
           readinessProbe:
             initialDelaySeconds: 10
             httpGet:
@@ -46,27 +43,27 @@ spec:
           - name: PORT
             value: "8080"
           - name: PRODUCT_CATALOG_SERVICE_ADDR
-            value: "productcatalogservice:80"
+            value: "productcatalogservice:3550"
           - name: CURRENCY_SERVICE_ADDR
-            value: "currencyservice:80"
+            value: "currencyservice:7000"
           - name: CART_SERVICE_ADDR
-            value: "cartservice:80"
+            value: "cartservice:7070"
           - name: RECOMMENDATION_SERVICE_ADDR
-            value: "recommendationservice:80"
+            value: "recommendationservice:8080"
           - name: SHIPPING_SERVICE_ADDR
-            value: "shippingservice:80"
+            value: "shippingservice:50051"
           - name: CHECKOUT_SERVICE_ADDR
-            value: "checkoutservice:80"
+            value: "checkoutservice:5050"
           - name: AD_SERVICE_ADDR
-            value: "adservice:80"
+            value: "adservice:9555"
           # # ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
           # # When not set, defaults to "local" unless running in GKE, otherwies auto-sets to gcp 
           - name: ENV_PLATFORM 
             value: "aws"
           - name: DISABLE_TRACING
-            value: "true"
+            value: "1"
           - name: DISABLE_PROFILER
-            value: "true"
+            value: "1"
           # - name: JAEGER_SERVICE_ADDR
           #   value: "jaeger-collector:14268"
           # - name: CYMBAL_BRANDING
@@ -80,29 +77,11 @@ spec:
               memory: 128Mi
 
 --- 
-
+#
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: prod
   name: frontend
-  labels:
-    app: frontend
-    project: telecom-project
-spec:
-  ports:
-  - name: rpc
-    port: 80
-    targetPort: rpc
-  type: ClusterIP
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: prod
-  name: frontend-external
 spec:
   type: LoadBalancer
   selector:
@@ -110,26 +89,25 @@ spec:
   ports:
   - name: http
     port: 80
-    targetPort: rpc 
-# apiVersion: networking.k8s.io/v1beta1
-# kind: Ingress
-# metadata:
-#   namespace: prod
-#   name: ingress-telecom
-#   labels:
-#     app: frontend
-#     project: telecom-project
-#   annotations:
-#     kubernetes.io/ingress.class: alb
-#     alb.ingress.kubernetes.io/scheme: internet-facing
-#     alb.ingress.kubernetes.io/target-type: ip
-# spec:
-#   rules:
-#     - http:
-#         paths:
-#           - path: /*
-#             backend:
-#               serviceName: frontend
-#               servicePort: 80
+    targetPort: 8080
 
+  
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  #namespace: frontend-app
+  name: ingress-public
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: frontend
+              servicePort: 80
               
