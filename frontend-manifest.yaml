@@ -2,11 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-<<<<<<< HEAD
   namespace: prod
-=======
-  namespace: telecom-project
->>>>>>> f1a8929758c763d7642ac5bd1528e811e482b84c
   name: frontend
   labels:
     app: frontend
@@ -88,11 +84,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-<<<<<<< HEAD
   namespace: prod
-=======
-  namespace: telecom-project
->>>>>>> f1a8929758c763d7642ac5bd1528e811e482b84c
   name: frontend
   labels:
     app: frontend
@@ -115,7 +107,6 @@ spec:
   ports:
   - name: rpc
     port: 80
-<<<<<<< HEAD
     targetPort: rpc 
 # apiVersion: networking.k8s.io/v1beta1
 # kind: Ingress
@@ -137,31 +128,5 @@ spec:
 #             backend:
 #               serviceName: frontend
 #               servicePort: 80
-=======
-    targetPort: 8080
-  type: ClusterIP
-  
-    
-
- 
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  namespace: telecom-project
-  name: ingress-telecom
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /*
-            backend:
-              serviceName: frontend
-              servicePort: 80
->>>>>>> f1a8929758c763d7642ac5bd1528e811e482b84c
 
               
