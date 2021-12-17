@@ -13,5 +13,6 @@ build:
  needs: []
 
 # deploy:
-  # after_script:
-  #   - kubectl get service frontend-external -n $NAMESPACE | awk '{print $4}'
+#   after_script:
+#     - kubectl rollout restart deployment $CI_PROJECT_NAME -n $NAMESPACE
+#     - kubectl get ingress -n $NAMESPACE | awk 'NR==2 {print $4}'
