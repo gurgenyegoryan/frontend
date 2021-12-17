@@ -9,10 +9,8 @@ variables:
 test:
   extends: .test-go
 
-#build:
-#  needs:
-#    - test
-#
+build:
+ needs: []
 
 # deploy:
   # after_script:
