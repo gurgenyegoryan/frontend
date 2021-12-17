@@ -4,7 +4,7 @@ include:
     file: '/.gl-templates/microservices.gitlab-ci.yml'
 
 variables:
-  NAMESPACE: prod
+  NAMESPACE: dev
 
 test:
   extends: .test-go
@@ -14,6 +14,6 @@ test:
 #    - test
 #
 
-deploy:
-  after_script:
-    - kubectl get service frontend-external -n $NAMESPACE | awk '{print $4}'
+# deploy:
+  # after_script:
+  #   - kubectl get service frontend-external -n $NAMESPACE | awk '{print $4}'
