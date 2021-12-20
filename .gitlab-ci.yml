@@ -8,6 +8,9 @@ variables:
 
 test:
   extends: .test-go
+  after_script:
+    - cd money/
+    - go test #test money.go
 
 build:
  needs: []
